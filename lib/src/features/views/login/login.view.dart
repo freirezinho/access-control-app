@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginView extends StatefulWidget {
   final String title = "Login";
@@ -10,6 +11,31 @@ class LoginView extends StatefulWidget {
 }
 
 class _LoginViewState extends State<LoginView> {
+  final _usernameController = TextEditingController();
+  final _passwordController = TextEditingController();
+
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   // logUserIn();
+  // }
+
+  // void logUserIn() {
+  //   FirebaseAuth.instance.authStateChanges().listen((User? user) {
+  //     if (user == null) {
+  //       print("Not signed in.");
+  //     }
+  //     else {
+  //       Navigator.pushReplacementNamed(context, '/home');
+  //     }
+  //   });
+  // }
+
+  // @override
+  // void dispose() {
+  //   super.dispose();
+  // }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,23 +65,45 @@ class _LoginViewState extends State<LoginView> {
               // horizontal).
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.stretch,
+
               children: <Widget>[
                 Text(
-                  'Loguinho',
+                  'SmartLocks',
                   style: Theme.of(context).textTheme.headline4,
                 ),
-                Text(
-                  'Username',
-                  textAlign: TextAlign.left,
+                TextField(
+                  controller: _usernameController,
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Username',
+                  ),
                 ),
-                TextField(),
-                Text(
-                  'Password',
-                  textAlign: TextAlign.left,
+                TextField(
+                  controller: _passwordController,
+                  obscureText: true,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Password',
+                  ),
                 ),
-                TextField(),
-                ElevatedButton(onPressed: () {
-                  Navigator.pushNamed(context, '/home');
+                ElevatedButton(onPressed: () async {
+                  try {
+                    UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+                        email: _usernameController.text,
+                        password: _passwordController.text
+                    );
+                    // Navigator.pushReplacementNamed(context, '/home');
+                  } on FirebaseAuthException catch (e) {
+                    if (e.code == 'weak-password') {
+                      print('The password provided is too weak.');
+                    } else if (e.code == 'email-already-in-use') {
+                      print('The account already exists for that email.');
+                    }
+                  } catch (e) {
+                    print(e);
+                  }
+
                 }, child:
                   Text("Login")
                 )
