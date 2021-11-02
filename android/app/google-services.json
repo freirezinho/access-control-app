@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "891253528410",
+    "project_id": "smartlocks-8278e",
+    "storage_bucket": "smartlocks-8278e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:891253528410:android:fbc310b638e6c1c02a0563",
+        "android_client_info": {
+          "package_name": "com.lockfront.smartlocks"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "891253528410-csrc275hbod2dvaumc8vrrv22k4jdmhp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB_teuQ_rgrH4tSVxyzHtu68PYrQJT0ABM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "891253528410-csrc275hbod2dvaumc8vrrv22k4jdmhp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

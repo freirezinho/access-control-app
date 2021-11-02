@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>891253528410-3uqj2tb67kmoo8ri00m0i9vqhgcr1nns.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.891253528410-3uqj2tb67kmoo8ri00m0i9vqhgcr1nns</string>
+	<key>API_KEY</key>
+	<string>AIzaSyCcUArlGlsbjHmUmGxq7bEQDI3w9qatki0</string>
+	<key>GCM_SENDER_ID</key>
+	<string>891253528410</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.lockfront.smartLocks</string>
+	<key>PROJECT_ID</key>
+	<string>smartlocks-8278e</string>
+	<key>STORAGE_BUCKET</key>
+	<string>smartlocks-8278e.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:891253528410:ios:8a043c3f719510532a0563</string>
+</dict>
+</plist>
