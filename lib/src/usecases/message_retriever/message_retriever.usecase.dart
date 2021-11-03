@@ -3,7 +3,7 @@ import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 
 abstract class MessageRetrieverUseCase {
-  abstract MessageRepository repository;
+  late final MessageRepository repository;
   final void Function() onConnected;
   final void Function() onDisconnected;
   final void Function(String) onSubscribed;
@@ -17,7 +17,8 @@ abstract class MessageRetrieverUseCase {
     required this.onSubscribed,
     required this.onSubscribedFail,
     required this.on,
-    required this.pong
+    required this.pong,
+    required this.repository,
   }) {
     this.repository.onConnected = onConnected;
     this.repository.onDisconnected = onDisconnected;

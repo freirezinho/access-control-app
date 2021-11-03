@@ -1,12 +1,28 @@
+import 'package:access_control/src/data/models/smart_lock_device/meta.dart';
 import 'package:access_control/src/data/routes/route_factory.dart';
 import 'package:access_control/src/features/views/loading/loading.view.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:path/path.dart';
+import 'package:sqflite_sqlcipher/sqflite.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(ACApp());
+}
+
+Future<Database> initDB() async {
+  final Database databaseConnection = await openDatabase(
+    join( await getDatabasesPath(), '${DBMeta.db_name}.db'),
+    onCreate: (db, version) {
+      return db.execute(
+        'CREATE TABLE ${DBMeta.tb_devices}(id INTEGER PRIMARY KEY, name TEXT, isActive BOOLEAN)',
+      );
+    },
+    version: 1,
+  );
+  return databaseConnection;
 }
 
 class ACApp extends StatefulWidget {
