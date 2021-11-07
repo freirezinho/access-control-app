@@ -151,7 +151,8 @@ class _RegisterDeviceViewState extends State<RegisterDeviceView> {
           .then((value) {
             print("Then...");
             controller.pauseCamera();
-            Navigator.of(context).pushNamedAndRemoveUntil("/home", ModalRoute.withName("/home"));
+            //TODO: FIX this routing situation.
+            Navigator.of(context).popUntil(ModalRoute.withName("/home"));
         }).catchError((error){
             print("FOUND ERROR ON SCREEN: $error");
             reassemble();
