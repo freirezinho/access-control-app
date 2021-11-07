@@ -4,12 +4,21 @@ import 'package:access_control/src/usecases/sl_device/repository/sl_device.repos
 class SLDeviceUseCaseImpl {
   late final SLDeviceRepository repository;
 
-  Future<List<SLDevice>> getDevices() {
-    return this.repository.getDevices();
+  Future<List<SLDevice>> getDevices() async {
+    try {
+      return this.repository.getDevices();
+    } catch(e) {
+      print(e);
+      return [] as List<SLDevice>;
+    }
   }
 
-  Future<void> setNewDevice({required SLDevice device}) async{
-    await this.repository.setNewDevice(device);
+  Future<void> setNewDevice({required String jsonString}) async{
+      return await this.repository.setNewDevice(jsonString: jsonString);
+  }
+
+  Future<void> deleteDevice(SLDevice device) async {
+    return await this.repository.deleteDevice(device);
   }
 
   SLDeviceUseCaseImpl({

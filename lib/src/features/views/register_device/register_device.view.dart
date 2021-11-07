@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:io';
-
+import 'package:access_control/src/usecases/sl_device/repository/sl_device.impl.repository.dart';
+import 'package:access_control/src/usecases/sl_device/sl_device.impl.usecase.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
@@ -13,6 +14,7 @@ class RegisterDeviceView extends StatefulWidget {
 class _RegisterDeviceViewState extends State<RegisterDeviceView> {
   Barcode? result;
   QRViewController? controller;
+  bool finished = false;
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
 
   // In order to get hot reload to work we need to pause the camera if the platform
@@ -27,8 +29,19 @@ class _RegisterDeviceViewState extends State<RegisterDeviceView> {
   }
 
   @override
+  void didUpdateWidget(covariant RegisterDeviceView oldWidget) {
+    WidgetsBinding.instance?.ensureVisualUpdate();
+    if (finished) {
+      print("Did update and finished");
+      Navigator.of(context).pushReplacementNamed('/home');
+    }
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.lightGreen,
       body: Column(
         children: <Widget>[
           Expanded(flex: 4, child: _buildQrView(context)),
@@ -39,11 +52,8 @@ class _RegisterDeviceViewState extends State<RegisterDeviceView> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
-                  if (result != null)
-                    Text(
-                        'Barcode Type: ${describeEnum(result!.format)}   Data: ${result!.code}')
-                  else
-                    Text('Scan a code'),
+                SizedBox(height: 10),
+                 Text("Escaneie um código"),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -116,7 +126,7 @@ class _RegisterDeviceViewState extends State<RegisterDeviceView> {
       key: qrKey,
       onQRViewCreated: _onQRViewCreated,
       overlay: QrScannerOverlayShape(
-          borderColor: Colors.red,
+          borderColor: Colors.green,
           borderRadius: 10,
           borderLength: 30,
           borderWidth: 10,
@@ -126,17 +136,32 @@ class _RegisterDeviceViewState extends State<RegisterDeviceView> {
   }
 
   void _onQRViewCreated(QRViewController controller) {
-    setState(() {
-      this.controller = controller;
-    });
+    if (this.controller == null) {
+      setState(() {
+        this.controller = controller;
+      });
+    }
     controller.scannedDataStream.listen((scanData) {
       if (scanData.format == BarcodeFormat.qrcode) {
         print("Found QRCode");
         print("Data ${scanData.code}");
+        // controller.pauseCamera();
+        // controller.resumeCamera();
+        SLDeviceUseCaseImpl(repository: SLDeviceRepositoryImpl()).setNewDevice(jsonString: scanData.code)
+          .then((value) {
+            print("Then...");
+            controller.pauseCamera();
+            Navigator.of(context).pushNamedAndRemoveUntil("/home", ModalRoute.withName("/home"));
+        }).catchError((error){
+            print("FOUND ERROR ON SCREEN: $error");
+            reassemble();
+            controller.resumeCamera();
+        });
+      } else {
+        setState(() {
+          result = scanData;
+        });
       }
-      setState(() {
-        result = scanData;
-      });
     });
   }
 
