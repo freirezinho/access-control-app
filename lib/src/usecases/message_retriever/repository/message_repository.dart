@@ -25,31 +25,5 @@ abstract class MessageRepository {
     required this.clientID
   });
 
-  Future<MqttServerClient> mqttClient({required void Function(List<MqttReceivedMessage<MqttMessage>>) messageHandler}) async {
-    var client = this.messageClient.toMqttServerClient(url: this.url, clientID: this.clientID, port: this.port);
-    client.keepAlivePeriod = 60;
-    client.onConnected = this.onConnected;
-    client.onDisconnected = this.onDisconnected;
-    client.onSubscribed = this.onSubscribed;
-    client.onSubscribeFail = this.onSubscribedFail;
-    client.pongCallback = this.pong;
-
-    final connMessage = MqttConnectMessage()
-      .authenticateAs(this.username, this.password)
-      .startClean()
-      .withWillQos(MqttQos.atLeastOnce)
-      .withClientIdentifier(this.clientID);
-
-    client.connectionMessage = connMessage;
-    try {
-      await client.connect();
-      client.subscribe('endpoint', MqttQos.atLeastOnce);
-    }
-    catch (e){
-      print("Error: $e");
-      client.disconnect();
-    }
-    streamSubscription = client.updates?.listen(messageHandler);
-    return client;
-  }
+  Future<MqttServerClient> mqttClient({required void Function(List<MqttReceivedMessage<MqttMessage>>) messageHandler});
 }

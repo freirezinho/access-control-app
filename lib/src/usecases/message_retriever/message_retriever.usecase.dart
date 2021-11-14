@@ -1,3 +1,4 @@
+import 'package:access_control/src/usecases/message_retriever/repository/message_client.dart';
 import 'package:access_control/src/usecases/message_retriever/repository/message_repository.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
@@ -30,6 +31,20 @@ abstract class MessageRetrieverUseCase {
 
   Future<MqttServerClient> connectMqtt({required void Function(List<MqttReceivedMessage<MqttMessage>>)  messageHandler}) async {
     return this.repository.mqttClient(messageHandler: messageHandler);
+  }
+
+  static allow() {
+    _publishMessage("allow");
+  }
+
+  static deny() {
+    _publishMessage("deny");
+  }
+
+  static _publishMessage(String message) {
+    final builder = MqttClientPayloadBuilder();
+    builder.addString(message);
+    MessageClient.shared.mqttClient.publishMessage("endpoint", MqttQos.exactlyOnce, builder.payload!);
   }
 
 }

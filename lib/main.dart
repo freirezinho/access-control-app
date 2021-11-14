@@ -1,9 +1,14 @@
 import 'package:access_control/src/data/db/database.helper.data.dart';
 import 'package:access_control/src/data/routes/route_factory.dart';
 import 'package:access_control/src/features/views/loading/loading.view.dart';
+import 'package:access_control/src/usecases/message_retriever/MQTTHelper.dart';
+import 'package:access_control/src/usecases/message_retriever/message_retriever.impl.usecase.dart';
+import 'package:access_control/src/usecases/message_retriever/message_retriever.usecase.dart';
+import 'package:access_control/src/usecases/message_retriever/repository/message_repository.impl.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:mqtt_client/mqtt_client.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,8 +22,8 @@ class ACApp extends StatefulWidget {
 
 class _ACAppState extends State<ACApp> {
   final Future<FirebaseApp> _initFirebaseSdk = Firebase.initializeApp();
-  final _navigatorKey = new GlobalKey<NavigatorState>();
-
+  static final globalNavigatorKey = new GlobalKey<NavigatorState>();
+  late final MessageRetrieverUseCase mqttUseCase;
   bool _initialized = false;
   bool _error = false;
 
@@ -37,9 +42,67 @@ class _ACAppState extends State<ACApp> {
     }
   }
 
+  void initMQTT() {
+    mqttUseCase = MessageRetrieverUseCaseImpl(
+        onConnected: MQTTHelper.onConnected,
+        onDisconnected: MQTTHelper.onDisconnected,
+        onSubscribed: MQTTHelper.onSubbed,
+        onSubscribedFail: MQTTHelper.onSubbedFail,
+        on: MQTTHelper.on,
+        pong: MQTTHelper.pong,
+        repository: MessageRepositoryImpl()
+    );
+    mqttUseCase.connectMqtt(messageHandler: _messageHandler);
+  }
+
+  void Function(List<MqttReceivedMessage<MqttMessage>>) _messageHandler = (List<MqttReceivedMessage<MqttMessage>> messages) {
+    final MqttPublishMessage receivedMessage = messages[0].payload as MqttPublishMessage;
+    final String message = MqttPublishPayload.bytesToString(receivedMessage.payload.message);
+    print(message);
+    if (message == "X") {
+      globalNavigatorKey.currentState!.push(
+          PageRouteBuilder(
+            barrierDismissible: true,
+            opaque: false,
+            pageBuilder: (_, anim1, anim2) => AlertDialog(
+                title: Text("Permitir acesso?"),
+                actions: [
+                  ElevatedButton(
+                    onPressed: () {
+                      print("Negar");
+                      mqttUseCase.deny();
+                      globalNavigatorKey.currentState!.pop();
+                    },
+                    child: Text("Negar"),
+                    style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all<Color>(Colors.red),
+                        foregroundColor: MaterialStateProperty.all<Color>(Colors.white)
+                    ),
+                  ),
+                  ElevatedButton(
+                      onPressed: () {
+                        print("permitir");
+                        mqttUseCase.allow();
+                        globalNavigatorKey.currentState!.pop();
+                      },
+                      child: Text("Permitir")
+                  )
+                ],
+                content: Text('Alguém pediu para entrar. Você permite o acesso?'),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(10.0),
+                  ),
+                )
+            )
+        )
+      );
+    }
+  };
+
   @override
   void initState() {
     // initializeFlutterFire();
+    initMQTT();
     super.initState();
   }
 
@@ -55,7 +118,7 @@ class _ACAppState extends State<ACApp> {
     return MaterialApp(
       title: 'Access Control',
       routes: ACRouteFactory.routes,
-      navigatorKey: _navigatorKey,
+      navigatorKey: globalNavigatorKey,
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -78,10 +141,10 @@ class _ACAppState extends State<ACApp> {
               // Assign listener after the SDK is initialized successfully
               FirebaseAuth.instance.authStateChanges().listen((User? user) {
                 if (user == null)
-                  _navigatorKey.currentState!
+                  globalNavigatorKey.currentState!
                       .pushReplacementNamed('/login');
                 else
-                  _navigatorKey.currentState!
+                  globalNavigatorKey.currentState!
                       .pushReplacementNamed('/home');
               });
             }
@@ -92,4 +155,3 @@ class _ACAppState extends State<ACApp> {
     );
   }
 }
-
