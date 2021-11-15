@@ -60,13 +60,14 @@ class MessageRepositoryImpl implements MessageRepository {
     final connMessage = MqttConnectMessage()
         .authenticateAs(this.username, this.password)
         .startClean()
-        .withWillQos(MqttQos.atLeastOnce)
+        // .withWillQos(MqttQos.atLeastOnce)
         .withClientIdentifier(this.clientID);
 
     client.connectionMessage = connMessage;
     try {
       await client.connect();
       client.subscribe('endpoint', MqttQos.atLeastOnce);
+      messageClient.mqttClient = client;
     }
     catch (e){
       print("Error: $e");

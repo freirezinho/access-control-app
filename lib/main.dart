@@ -57,9 +57,8 @@ class _ACAppState extends State<ACApp> {
 
   void Function(List<MqttReceivedMessage<MqttMessage>>) _messageHandler = (List<MqttReceivedMessage<MqttMessage>> messages) {
     final MqttPublishMessage receivedMessage = messages[0].payload as MqttPublishMessage;
-    final String message = MqttPublishPayload.bytesToString(receivedMessage.payload.message);
-    print(message);
-    if (message == "X") {
+    final String message = MqttPublishPayload.bytesToStringAsString(receivedMessage.payload.message);
+    if (message == "CHECK_ACCESS") {
       globalNavigatorKey.currentState!.push(
           PageRouteBuilder(
             barrierDismissible: true,
@@ -70,7 +69,7 @@ class _ACAppState extends State<ACApp> {
                   ElevatedButton(
                     onPressed: () {
                       print("Negar");
-                      mqttUseCase.deny();
+                      MessageRetrieverUseCase.deny();
                       globalNavigatorKey.currentState!.pop();
                     },
                     child: Text("Negar"),
@@ -82,7 +81,7 @@ class _ACAppState extends State<ACApp> {
                   ElevatedButton(
                       onPressed: () {
                         print("permitir");
-                        mqttUseCase.allow();
+                        MessageRetrieverUseCase.allow();
                         globalNavigatorKey.currentState!.pop();
                       },
                       child: Text("Permitir")

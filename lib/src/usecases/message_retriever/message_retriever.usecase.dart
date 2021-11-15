@@ -34,7 +34,7 @@ abstract class MessageRetrieverUseCase {
   }
 
   static allow() {
-    _publishMessage("allow");
+    _publishMessage("ALLOW_ACCESS");
   }
 
   static deny() {
