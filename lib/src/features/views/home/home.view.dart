@@ -299,7 +299,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                   ),
                   IconButton(onPressed: () {
                     showDeleteAlert(context, values[index]);
-                  }, icon: Icon(Icons.delete))
+                  }, icon: Icon(Icons.delete, color: Colors.redAccent,))
                 ],
               ),
             ),
