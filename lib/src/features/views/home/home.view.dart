@@ -3,6 +3,7 @@ import 'package:access_control/src/data/models/smart_lock_device/smart_lock_devi
 import 'package:access_control/src/usecases/sl_device/repository/sl_device.impl.repository.dart';
 import 'package:access_control/src/usecases/sl_device/sl_device.impl.usecase.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key? key}) : super(key: key);
@@ -25,6 +26,10 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   bool reRender = false;
   bool toggledRoute = false;
+  int _selectedTabIndex = 0;
+  static const List<Widget> _subpages = <Widget>[
+
+  ];
   List<SLDevice>? devices = [];
 
   @override
@@ -51,6 +56,115 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     return super.didPushRouteInformation(routeInformation);
   }
 
+  void _onTabChange(int index) {
+    setState(() {
+      _selectedTabIndex = index;
+    });
+  }
+
+  Widget getSubpageForIndex(int index, BuildContext context) {
+    switch (index) {
+      case 1: {
+        return settingsSubPage(context);
+      }
+      default: {
+        return deviceListSubPage(context);
+      }
+      break;
+    }
+  }
+
+  Widget deviceListSubPage(BuildContext context) {
+    return Center(
+      // Center is a layout widget. It takes a single child and positions it
+      // in the middle of the parent.
+        child: Padding(
+          padding: EdgeInsets.only(left: 16, right: 16),
+          child: FutureBuilder<List<SLDevice>>(
+            future: getDevices(),
+            initialData: [],
+            builder: (context, snapshot) {
+              List<SLDevice>? devices = snapshot.data;
+              if (devices != null && devices.length > 0) {
+                return buildList(context, snapshot);
+              } else {
+                return Container(
+                  child: Text("Não há dispositivos cadastrados."),
+                );
+              }
+            },
+          ),
+        )
+    );
+  }
+
+  Widget settingsSubPage(BuildContext context) {
+    return Center(
+      // Center is a layout widget. It takes a single child and positions it
+      // in the middle of the parent.
+        child: Padding(
+          padding: EdgeInsets.only(left: 16, right: 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(
+                height: 24,
+              ),
+              Text(
+                  "Configurações",
+                style: TextStyle(
+                  fontSize: 36.0,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: -2,
+                ),
+                textAlign: TextAlign.left,
+              ),
+              InkWell(
+                onTap: () {
+                  print("Nav to About");
+                },
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          height: 60,
+                          child: Center(
+                            child: Text("Sobre o App"),
+                          ),
+                        )
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              Divider(),
+              InkWell(
+                onTap: () {
+                  FirebaseAuth.instance.signOut();
+                },
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          height: 60,
+                          child: Center(
+                            child: Text("Logout"),
+                          ),
+                        )
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              Divider(),
+            ],
+          ),
+        )
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
@@ -65,28 +179,21 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
+        backgroundColor: Colors.white,
+        elevation: 1,
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Padding(
-            padding: EdgeInsets.only(left: 16, right: 16),
-            child: FutureBuilder<List<SLDevice>>(
-              future: getDevices(),
-              initialData: [],
-              builder: (context, snapshot) {
-                List<SLDevice>? devices = snapshot.data;
-                if (devices != null && devices.length > 0) {
-                  return buildList(context, snapshot);
-                } else {
-                  return Container(
-                    child: Text("Não há dispositivos cadastrados."),
-                  );
-                }
-              },
-            ),
-          )
-        ),
+      body: getSubpageForIndex(_selectedTabIndex, context),
+      backgroundColor: Colors.white,
+      bottomNavigationBar: BottomNavigationBar(
+        items: [
+          BottomNavigationBarItem(icon: Icon(Icons.playlist_add), label: 'Dispositivos'),
+          BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Config')
+        ],
+        currentIndex: _selectedTabIndex,
+        selectedItemColor: Colors.cyan,
+        onTap: _onTabChange,
+        backgroundColor: Colors.white,
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.pushNamed(context, '/register-device');

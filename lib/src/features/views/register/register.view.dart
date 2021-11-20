@@ -2,15 +2,15 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-class LoginView extends StatefulWidget {
+class RegisterView extends StatefulWidget {
   final String title = "SmartLocks";
 
   @override
-  State<StatefulWidget> createState() => _LoginViewState();
+  State<StatefulWidget> createState() => _RegisterViewState();
 
 }
 
-class _LoginViewState extends State<LoginView> {
+class _RegisterViewState extends State<RegisterView> {
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
 
@@ -71,7 +71,7 @@ class _LoginViewState extends State<LoginView> {
 
               children: <Widget>[
                 Text(
-                  'Login',
+                  'Registrar',
                   style: Theme.of(context).textTheme.headline4,
                 ),
                 SizedBox(
@@ -86,7 +86,7 @@ class _LoginViewState extends State<LoginView> {
                   ),
                 ),
                 SizedBox(
-                  height: 16
+                    height: 16
                 ),
                 TextField(
                   controller: _passwordController,
@@ -101,12 +101,11 @@ class _LoginViewState extends State<LoginView> {
                 ),
                 ElevatedButton(onPressed: () async {
                   try {
-                    UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+                    FirebaseAuth.instance.createUserWithEmailAndPassword(
                         email: _usernameController.text,
                         password: _passwordController.text
-                    );
+                    ).then((value) => Navigator.pushReplacementNamed(context, '/home'));
 
-                    // Navigator.pushReplacementNamed(context, '/home');
                   } on FirebaseAuthException catch (e) {
                     if (e.code == 'weak-password') {
                       print('The password provided is too weak.');
@@ -118,14 +117,7 @@ class _LoginViewState extends State<LoginView> {
                   }
 
                 }, child:
-                  Text("Login"),
-                ),
-                SizedBox(height: 30,),
-                Text("Não tem uma conta?", textAlign: TextAlign.center),
-                SizedBox(height: 8,),
-                InkWell(
-                  child: Text("Crie uma agora.", textAlign: TextAlign.center, style: TextStyle(color: Colors.cyan),),
-                  onTap: () => Navigator.of(context).pushNamed('/register-account'),
+                Text("Registrar"),
                 )
 
               ],

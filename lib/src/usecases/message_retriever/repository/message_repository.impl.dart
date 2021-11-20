@@ -60,7 +60,41 @@ class MessageRepositoryImpl implements MessageRepository {
     final connMessage = MqttConnectMessage()
         .authenticateAs(this.username, this.password)
         .startClean()
-        // .withWillQos(MqttQos.atLeastOnce)
+        .withClientIdentifier(this.clientID);
+
+    client.connectionMessage = connMessage;
+    try {
+      await client.connect();
+      client.subscribe('endpoint', MqttQos.atLeastOnce);
+      messageClient.mqttClient = client;
+    }
+    catch (e){
+      print("Error: $e");
+      client.disconnect();
+    }
+    streamSubscription = client.updates?.listen(messageHandler);
+    return client;
+  }
+
+  Future<MqttServerClient> changeMqttClient(
+      {
+        required void Function(List<MqttReceivedMessage<MqttMessage>> p1) messageHandler,
+        required String url,
+        required String clientID,
+      }
+  ) async {
+    this.messageClient.mqttClient.disconnect();
+    var client = this.messageClient.toMqttServerClient(url: url, clientID: clientID, port: this.port);
+    client.keepAlivePeriod = 60;
+    client.onConnected = this.onConnected;
+    client.onDisconnected = this.onDisconnected;
+    client.onSubscribed = this.onSubscribed;
+    client.onSubscribeFail = this.onSubscribedFail;
+    client.pongCallback = this.pong;
+
+    final connMessage = MqttConnectMessage()
+        .authenticateAs(this.username, this.password)
+        .startClean()
         .withClientIdentifier(this.clientID);
 
     client.connectionMessage = connMessage;

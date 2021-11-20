@@ -5,6 +5,9 @@ class MessageClient {
 
   // static MqttServerClient sharedMqttClient = MqttServerClient.withPort(MQTTClientData.url, MQTTClientData.password, MQTTClientData.port);
   static MessageClient shared = MessageClient();
+  late String mqttUrl;
+  late int mqttPort;
+  late String mqttClientID;
   late MqttServerClient mqttClient;
 
   MqttServerClient toMqttServerClient({
@@ -12,10 +15,13 @@ class MessageClient {
     required String clientID,
     required int port,
   }) {
+    shared.mqttClientID = clientID;
+    shared.mqttUrl = url;
+    shared.mqttPort = port;
     MqttServerClient client = MqttServerClient.withPort(url, clientID, port);
     client.logging(on: true);
     client.secure = false;
-    mqttClient = client;
+    shared.mqttClient = client;
     return client;
   }
 }
