@@ -39,7 +39,7 @@ class _RegisterDeviceViewState extends State<RegisterDeviceView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.cyan,
+      backgroundColor: Colors.white,
       body: Column(
         children: <Widget>[
           Expanded(flex: 4, child: _buildQrView(context)),

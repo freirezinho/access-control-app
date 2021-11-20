@@ -116,12 +116,13 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                   fontSize: 36.0,
                   fontWeight: FontWeight.w900,
                   letterSpacing: -2,
+                  color: Colors.black87
                 ),
                 textAlign: TextAlign.left,
               ),
               InkWell(
                 onTap: () {
-                  print("Nav to About");
+                  Navigator.of(context).pushNamed('/about');
                 },
                 child: Column(
                   children: [
@@ -130,7 +131,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                         Container(
                           height: 60,
                           child: Center(
-                            child: Text("Sobre o App"),
+                            child: Text("Sobre o App", style: TextStyle(color: Colors.black54)),
                           ),
                         )
                       ],
@@ -150,7 +151,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                         Container(
                           height: 60,
                           child: Center(
-                            child: Text("Logout"),
+                            child: Text("Logout", style: TextStyle(color: Colors.black54)),
                           ),
                         )
                       ],
