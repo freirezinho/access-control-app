@@ -1,4 +1,4 @@
-package com.example.access_control
+package com.lockfront.access_control
 
 import io.flutter.embedding.android.FlutterActivity
 
